@@ -6,37 +6,42 @@ from base64 import urlsafe_b64encode, urlsafe_b64decode
 from getpass import getpass
 import os
 import json
+import colored
 
+
+PINK = colored.fg(175)
+WHITE = colored.fg(15)
+GREEN = colored.fg(0)
 BACKEND = default_backend()
 SALT_SIZE = 32
 KEY_SIZE = 32
 PASSWORD_FILE = r'D:\scripts\vscode scripts\passwords.txt'
 
-# Updating the PasswordManager class to handle non-existing files and empty files
-# by creating a new file if it doesn't exist and informing the user.
 
 class PasswordManager:
-    def __init__(self, master_password: str, pin: str):
+    def __init__(self, master_password: str, pin: str) -> None:
         self.master_password = master_password
         self.pin = pin
         self.combined_password = master_password + pin
-        # Initialize data by reading from file or creating a new file if necessary
         self.data = self.read_encrypted_data_from_file()
+
 
     @staticmethod
     def generate_unique_salt() -> bytes:
         return os.urandom(SALT_SIZE)
 
+
     def derive_key(self, salt: bytes) -> bytes:
         kdf = Scrypt(
             salt=salt,
             length=KEY_SIZE,
-            n=2**14,
+            n=2**20,
             r=8,
             p=1,
             backend=BACKEND
         )
         return kdf.derive(self.combined_password.encode())
+
 
     def encrypt_data(self, data: str, key: bytes) -> str:
         iv = os.urandom(16)
@@ -44,6 +49,7 @@ class PasswordManager:
         encryptor = cipher.encryptor()
         encrypted_data = encryptor.update(data.encode()) + encryptor.finalize()
         return urlsafe_b64encode(iv + encrypted_data).decode()
+
 
     def decrypt_data(self, encrypted_data: str, key: bytes) -> str:
         try:
@@ -59,9 +65,11 @@ class PasswordManager:
             print(f"An unexpected error occurred during decryption: {e}")
             return None
 
+
     def write_encrypted_data_to_file(self) -> None:
         with open(PASSWORD_FILE, 'w') as file:
             json.dump(self.data, file)
+
 
     @staticmethod
     def read_encrypted_data_from_file() -> dict:
@@ -80,7 +88,8 @@ class PasswordManager:
             print("Warning: Corrupted data file. Starting with an empty password database.")
             return {}
 
-    def add_service(self):
+
+    def add_service(self) -> None:
         service = input("Enter the service name: ")
         original_data = getpass("Enter the password for the service: ")
         salt = self.generate_unique_salt()
@@ -90,7 +99,8 @@ class PasswordManager:
         self.write_encrypted_data_to_file()
         print(f"Password for {service} encrypted and stored.")
 
-    def get_password(self):
+
+    def get_password(self) -> None:
         service_to_retrieve = input("Enter the service name to retrieve: ")
         if service_to_retrieve in self.data:
             stored_data = self.data[service_to_retrieve]
@@ -102,19 +112,49 @@ class PasswordManager:
         else:
             print(f"No password stored for {service_to_retrieve}")
 
+
+    def list_services(self) -> None:
+        if self.data:
+            print("List of services stored:")
+            for service in self.data:
+                print(service)
+        else:
+            print("No services stored.")
+
+
+def clear_screen():
+    os.system('cls' if os.name=='nt' else 'clear')
+
+
 def main():
-    master_password = getpass("Enter your master password: ")
-    pin = getpass("Enter your PIN: ")
+    master_password = getpass(GREEN + "Enter your master password: " + WHITE)
+    pin = getpass(GREEN + "Enter your PIN: " + WHITE)
     manager = PasswordManager(master_password, pin)
+    clear_screen()
     while True:
-        print("1. Add password\n2. Get password\n3. Exit")
+        print(WHITE + "1. " + GREEN + "Add password\n" +
+              WHITE + "2. " + GREEN + "Get password\n" +
+              WHITE + "3. " + GREEN + "List services\n" +  # New option to list services
+              WHITE + "4. " + GREEN + "Exit" + WHITE)
         action = input().lower()
         if action == '1':
+            clear_screen()
             manager.add_service()
+            input("Press enter to continue...")
+            clear_screen()
         elif action == '2':
+            clear_screen()
             manager.get_password()
+            input("Press enter to continue...")
+            clear_screen()
         elif action == '3':
+            clear_screen()
+            manager.list_services()
+            input("Press enter to continue...")
+            clear_screen()
+        elif action == '4':
             break
+
 
 if __name__ == "__main__":
     main()
