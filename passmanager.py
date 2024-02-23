@@ -12,11 +12,15 @@ SALT_SIZE = 32
 KEY_SIZE = 32
 PASSWORD_FILE = r'D:\scripts\vscode scripts\passwords.txt'
 
+# Updating the PasswordManager class to handle non-existing files and empty files
+# by creating a new file if it doesn't exist and informing the user.
+
 class PasswordManager:
     def __init__(self, master_password: str, pin: str):
         self.master_password = master_password
         self.pin = pin
         self.combined_password = master_password + pin
+        # Initialize data by reading from file or creating a new file if necessary
         self.data = self.read_encrypted_data_from_file()
 
     @staticmethod
@@ -63,8 +67,17 @@ class PasswordManager:
     def read_encrypted_data_from_file() -> dict:
         try:
             with open(PASSWORD_FILE, 'r') as file:
-                return json.load(file)
+                file_content = file.read()
+                if not file_content:
+                    return {}
+                return json.loads(file_content)
         except FileNotFoundError:
+            print("Password file does not exist. Creating a new one.")
+            with open(PASSWORD_FILE, 'w') as file:
+                file.write('{}')
+            return {}
+        except json.JSONDecodeError:
+            print("Warning: Corrupted data file. Starting with an empty password database.")
             return {}
 
     def add_service(self):
