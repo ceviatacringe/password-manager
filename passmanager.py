@@ -10,7 +10,7 @@ from colored import fg
 
 PINK = fg(175)
 WHITE = fg(15)
-GREEN = fg(0)
+GREEN = fg(10)
 SALT_SIZE = 32
 KEY_SIZE = 32
 PASSWORD_FILE = 'passwords.txt'
