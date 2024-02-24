@@ -1,4 +1,4 @@
-## Basics
+# Basics
 This is a fully locally hosted password manager.
 The user has to input a master password and a PIN to proceed.
 Those two generate an encryption key that is used to securely store passwords.
@@ -11,13 +11,13 @@ If the master password + PIN is correct, the user can extract the passwords for 
 - An interactive menu input-based UI
 - Added colors and console clearing for a better looking experience
 
-## Security measures
+# Security measures
 - Uses AES in CFB (Cipher Feedback) mode for robust symmetric encryption, ensuring that your service passwords are securely encrypted before storage.
 - Salt and pin added to combat rainbow tables
 - Increased 'n' Factor computational complexity, having longer loading time in order to prevent brute forcing.
 - Hides user password and pin input in the terminal, instead of displaying it as it's typed.
 
-## Purpose and usage
+# Purpose and usage
 I made this as a learning experiment and project to display my knowledge.
 You can take my encryption and storage functions and alter the user interactions, in order to make the following:
 - Website username + password combination manager
