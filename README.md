@@ -7,10 +7,15 @@ The passwords are stored in a file and location that the user chooses, in plaint
 All of the passwords are encrypted and unusable right out of the txt file, they need to be decrypted.
 If the master password + PIN is correct, the user can extract the passwords for a given service that they stored.
 
+# UI Features
+- An interactive menu input-based UI
+- Added colors and console clearing for a better looking experience
+
 ## Security measures
 - Uses AES in CFB (Cipher Feedback) mode for robust symmetric encryption, ensuring that your service passwords are securely encrypted before storage.
 - Salt and pin added to combat rainbow tables
 - Increased 'n' Factor computational complexity, having longer loading time in order to prevent brute forcing.
+- Hides user password and pin input in the terminal, instead of displaying it as it's typed.
 
 ## Purpose and usage
 I made this as a learning experiment and project to display my knowledge.
